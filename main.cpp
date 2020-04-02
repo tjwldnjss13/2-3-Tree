@@ -47,8 +47,10 @@ public:
     /* Function to insert a new data.
        If duplicated, do nothing.     */
     void insertData(T data) {
+        cout << "It's time to insert " << data << endl;
         // It works only if not duplicated.
         if (searchNode(root, data) == NULL) {
+            cout << "It's not duplicated. Able to insert " << data << "!" << endl;
             TreeNode<T> *parent = NULL;
             TreeNode<T> *current = root;
 
@@ -80,6 +82,7 @@ public:
 
             // When leaf has 1 data.
             if (parent->numData == 1) {
+                cout << "(Inserting to the node that has 1 data)" << endl;
                 if (data < parent->data[0]) {
                     int tmp = parent->data[0];
                     parent->data[0] = data;
@@ -92,20 +95,10 @@ public:
 
             // When leaf has 2 data.
             else if (parent->numData == 2) {
+                cout << "(Inserting to the node that already has 2 data)" << endl;
+                cout << "We should split the node." << endl;
                 // Part to split node.
-
                 splitNode(parent, data);
-
-                /*
-                if (data < parent->data[0])
-                    parent->left = node;
-                else if (parent->data[0] < data && data < parent->data[1])
-                    parent->mid = node;
-                else if (parent->data[1] < data)
-                    parent->right = node;
-                node->depth = parent->depth + 1;
-                */
-
             }
             cout << "Inserted " << data << endl;
         }
@@ -133,18 +126,12 @@ public:
                 maxVal = data;
             }
 
+            cout << "[Current node's first data is " << node->data[0] << "]" << endl;
 
-            cout << "Current node's first data is " << node->data[0] << endl;
-
-            cout << "Root's first data is " << root->data[0] << endl;
-            cout << "Root has " << root->numData << " data" << endl;
+            cout << "[Root's first data is " << root->data[0] << "]" << endl;
+            cout << "[Root has " << root->numData << " data]" << endl;
             if (root->right != NULL)
-                cout << "Root's right child's first data " << root->right->data[0] << endl;
-            //if (getParent(node->data[0]) != NULL)
-            //    cout << "Current's parent's first data is " << getParent(node->data[0])->data[0] << endl;
-
-
-
+                cout << "[Root's right child's first data " << root->right->data[0] << "]" << endl;
 
             // When selected leaf is root
             if (node == root) {
@@ -155,6 +142,7 @@ public:
                 root_new->left = node;
                 root_new->left->data[0] = minVal;
                 root_new->left->data[1] = NULL;
+                root_new->left->numData = 1;
                 root_new->right = right_new;
                 root = root_new;
 
@@ -168,11 +156,15 @@ public:
 
                 root->left->depth = root->depth + 1;
                 root->right->depth = root->depth + 1;
+
+                cout << "New root!!!" << endl;
+                cout << "New root has " << root->numData << " datas." << endl;
+                cout << "And new root's first data is " << root->data[0] << endl;
             }
 
             // When selected leaf is not root
             else if (getParent(node->data[0]) != NULL) {
-                cout << "Current node is a leaf, not root" << endl;
+                cout << "Current node is just a node, not root" << endl;
                 TreeNode<T> *parent = getParent(node->data[0]);
 
                 // When parent has 1 data.
@@ -194,8 +186,10 @@ public:
                         parent->left->numData = 1;
 
                         parent->left->left = child_1;
+                        parent->left->mid = NULL;
                         parent->left->right = child_2;
                         parent->mid->left = child_3;
+                        parent->mid->mid = NULL;
                         parent->mid->right = child_4;
 
                         parent->mid->depth = parent->depth + 1;
@@ -211,14 +205,23 @@ public:
 
                         parent->right = right_new;
                         parent->mid = node;
+
                         parent->mid->data[0] = minVal;
                         parent->mid->data[1] = NULL;
                         parent->mid->numData = 1;
 
                         parent->mid->left = child_1;
+                        parent->mid->mid = NULL;
                         parent->mid->right = child_2;
+
+                        parent->right->left = child_3;
+                        parent->right->mid = NULL;
+                        parent->right->right = child_4;
+                        /*
                         right_new->left = child_3;
+                        right_new->mid = NULL;
                         right_new->right = child_4;
+                        */
 
                         parent->right->depth = parent->depth + 1;
                     }
@@ -228,160 +231,208 @@ public:
                 else if (parent->numData == 2) {
                     cout << "Parent has 2 data." << endl;
 
-                    TreeNode<T> *left_old = parent->left;
-                    TreeNode<T> *mid_old = parent->mid;
                     TreeNode<T> *right_old = parent->right;
+                    TreeNode<T> *mid_old = parent->mid;
+                    TreeNode<T> *left_old = parent->left;
 
                     // When the node is parent's left child.
                     if (node == parent->left) {
                         cout << "Current node is parent's left child." << endl;
-                        TreeNode<T> *left_new_1 = node;
+                        TreeNode<T> *left_new_1 = left_old;
                         left_new_1->data[0] = minVal;
                         left_new_1->data[1] = NULL;
+                        left_new_1->numData = 1;
                         TreeNode<T> *left_new_2 = new TreeNode<T>(maxVal);
                         left_new_2->depth = left_new_1->depth;
 
-                        cout << "Entering to another splitNode function." << endl;
-                        splitNode(parent, midVal, left_new_1, left_new_2, parent->mid, parent->right);
+                        TreeNode<T> *mid_new = parent->mid;
+                        TreeNode<T> *right_new = parent->right;
 
-                        left_new_1->depth++;
-                        left_new_2->depth++;
-                        parent->mid->depth++;
-                        parent->right->depth++;
+                        cout << "-----Entering to another splitNode function (LEFT)-----" << endl;
+                        splitNode(parent, midVal, left_new_1, left_new_2, mid_new, right_new);
+                        cout << "-----Escaping the splitNode function (LEFT)-----" << endl;
+
+                        cout << "Current's left child's first data is " << parent->left->data[0] << endl;
+
+                        TreeNode<T> *gparent_new =  getParent(parent->data[0]);
+
+                        if (gparent_new->numData == 1) {
+                            gparent_new->left->left = left_new_1;
+                            gparent_new->left->right = left_new_2;
+                            gparent_new->right->left = mid_new;
+                            gparent_new->right->right = right_new;
+                            cout << "#################  " << gparent_new->right->left->data[0] << endl;
+                        }
+                        else if (gparent_new->numData == 2) {
+                            if (parent == gparent_new->left) {
+                                cout << "Parent is Grand parent's left child." << endl;
+                                gparent_new->left->left = left_new_1;
+                                gparent_new->left->right = left_new_2;
+                                gparent_new->mid->left = mid_new;
+                                gparent_new->mid->right = right_new;
+                            }
+                            else if (parent == gparent_new->mid) {
+                                cout << "Parent is Grand parent's mid child." << endl;
+                                gparent_new->mid->left = left_new_1;
+                                gparent_new->mid->right = left_new_2;
+                                gparent_new->right->left = mid_new;
+                                gparent_new->right->right = right_new;
+                            }
+                        }
+
+                        cout << "111111111 " << root->data[0] << endl;
+                        cout << "222222222 " << root->left->data[0] << endl;
+                        cout << "333333333 " << root->left->right->data[0] << endl;
+                        //cout << "444444444 " << root->left->right->left->data[0] << endl;
+
+
+                        /*
+                        gparent_new->left->left = left_new_1;
+                        gparent_new->left->right = left_new_2;
+                        gparent_new->right->left = mid_new;
+                        gparent_new->right->right = right_new;
+                        */
+
+                        left_new_1->depth = getParent(left_new_1->data[0])->depth + 1;
+                        left_new_2->depth = getParent(left_new_2->data[0])->depth + 1;
+                        mid_new->depth = getParent(mid_new->data[0])->depth + 1;
+                        right_new->depth = getParent(right_new->data[0])->depth + 1;
+
                     }
 
                     // When the node is parent's middle child.
                     else if (node == parent->mid) {
                         cout << "Current node is parent's middle child." << endl;
-                        TreeNode<T> *mid_new_1 = node;
+                        TreeNode<T> *mid_new_1 = mid_old;
                         mid_new_1->data[0] = minVal;
                         mid_new_1->data[1] = NULL;
+                        mid_new_1->numData = 1;
                         TreeNode<T> *mid_new_2 = new TreeNode<T>(maxVal);
                         mid_new_2->depth = mid_new_1->depth;
 
-                        cout << "Entering to another splitNode function." << endl;
-                        splitNode(parent, midVal, parent->left, mid_new_1, mid_new_2, parent->right);
+                        TreeNode<T> *left_new = parent->left;
+                        TreeNode<T> *right_new = parent->right;
 
-                        parent->left->depth++;
-                        mid_new_1->depth++;
-                        mid_new_2->depth++;
-                        parent->right->depth++;
+                        cout << "-----Entering to another splitNode function (MIDDLE)-----" << endl;
+                        splitNode(parent, midVal, left_new, mid_new_1, mid_new_2, right_new);
+                        cout << "-----Escaping the splitNode function (MIDDLE)-----" << endl;
+
+                        TreeNode<T> *gparent_new = getParent(parent->data[0]);
+
+                        if (gparent_new->numData == 1) {
+                            gparent_new->left->left = left_new;
+                            gparent_new->left->mid = NULL;
+                            gparent_new->left->right = mid_new_1;
+                            gparent_new->right->left = mid_new_2;
+                            gparent_new->right->mid = NULL;
+                            gparent_new->right->right = right_new;
+                        }
+                        else if (gparent_new->numData == 2) {
+                            if (parent == gparent_new->left) {
+                                gparent_new->left->left = left_new;
+                                gparent_new->left->right = mid_new_1;
+                                gparent_new->mid->left = mid_new_2;
+                                gparent_new->mid->right = right_new;
+                            }
+                        else if (parent == gparent_new->mid) {
+                                gparent_new->mid->left = left_new;
+                                gparent_new->mid->right = mid_new_1;
+                                gparent_new->right->left = mid_new_2;
+                                gparent_new->right->right = right_new;
+                            }
+                        }
+
+                        cout << "111111111 " << root->data[0] << endl;
+                        cout << "222222222 " << root->left->data[0] << endl;
+                        cout << "333333333 " << root->left->right->data[0] << endl;
+                        //cout << "444444444 " << root->left->right->left->data[0] << endl;
+
+                        /*
+                        gparent_new->left->right = mid_new_1;
+                        gparent_new->right->left = mid_new_2;
+                        */
+
+                        left_new->depth = getParent(left_new->data[0])->depth + 1;
+                        mid_new_1->depth = getParent(mid_new_1->data[0])->depth + 1;
+                        mid_new_2->depth = getParent(mid_new_2->data[0])->depth + 1;
+                        right_new->depth = getParent(right_new->data[0])->depth + 1;
+
                     }
 
                     // When the node is parent's right child.
                     else if (node == parent->right) {
                         cout << "Current node is parent's right child." << endl;
-                        TreeNode<T> *right_new_1 = node;
+                        TreeNode<T> *right_new_1 = right_old;
                         right_new_1->data[0] = minVal;
                         right_new_1->data[1] = NULL;
+                        right_new_1->numData = 1;
                         TreeNode<T> *right_new_2 = new TreeNode<T>(maxVal);
                         right_new_2->depth = right_new_1->depth;
 
+                        TreeNode<T> *left_new = parent->left;
+                        TreeNode<T> *mid_new = parent->mid;
 
-                        cout << "Entering to another splitNode function." << endl;
-                        splitNode(parent, midVal, parent->left, parent->mid, right_new_1, right_new_2);
+                        cout << "-----Entering to another splitNode function (RIGHT)-----" << endl;
+                        splitNode(parent, midVal, left_new, mid_new, right_new_1, right_new_2);
+                        cout << "-----Escaping the splitNode function (RIGHT)-----" << endl;
 
-                        parent->left->depth++;
-                        parent->right->depth++;
-                        right_new_1->depth++;
-                        right_new_2->depth++;
+                        cout << "Current's left child's first data is " << parent->left->data[0] << endl;
+
+                        TreeNode<T> *gparent_new = getParent(parent->data[0]);
+
+
+                        if (gparent_new->numData == 1) {
+                            gparent_new->left->left = left_new;
+                            gparent_new->left->right = mid_new;
+                            gparent_new->right->left = right_new_1;
+                            gparent_new->right->right = right_new_2;
+                        }
+                        else if (gparent_new->numData == 2) {
+                            if (parent == gparent_new->left) {
+                                gparent_new->left->left = left_new;
+                                gparent_new->left->right = mid_new;
+                                gparent_new->mid->left = right_new_1;
+                                gparent_new->mid->right = right_new_2;
+                            }
+                            else if (parent == gparent_new->mid) {
+                                gparent_new->mid->left = left_new;
+                                gparent_new->mid->right = mid_new;
+                                gparent_new->right->left = right_new_1;
+                                gparent_new->right->right = right_new_2;
+                            }
+                        }
+
+                        /*
+                        gparent_new->mid->left = left_new;
+                        gparent_new->mid->right = mid_new;
+                        gparent_new->right->left = right_new_1;
+                        gparent_new->right->right = right_new_2;
+                        */
+
+                        left_new->depth = getParent(left_new->data[0])->depth + 1;
+                        mid_new->depth = getParent(mid_new->data[0])->depth + 1;
+                        right_new_1->depth = getParent(right_new_1->data[0])->depth + 1;
+                        right_new_2->depth = getParent(right_new_1->data[0])->depth + 1;
+
                     }
                 }
             }
         }
     }
 
-    /* Function to move the old data to it's parent. */
-    /*
-     void moveNodeToParent(TreeNode<T> *current, T data_) {
-        TreeNode<T> *parent = findParent(current);
-        int _1, _2, _3;
-        if (data_ < current->data[0]) {
-            _1 = data_;
-            _2 = current->data[0];
-            _3 = current->data[1];
-        }
-        else if (current->data[0] < data_ && data_ < current->data[1]) {
-            _1 = current->dat[0];
-            _2 = data_;tree.insertData(20);
-            _3 = current->data[1];
-        }
-        else if (current->data[1] < data_) {
-            _1 = current->data[0];
-            _2 = current->data[1];
-            _3 = data_;
-        }
-        // 올라온 값을 받을 부모의 값이 1개인 경우
-        if (parent->numData == 1) {
-            // 중간값을 부모로 올리고, 부모의 값들을 정렬
-            if (parent->data[0] < _2) {
-                parent->data[1] = _2;
-                parent->numData++;
-            }
-            else {
-                int tmp = parent->data[0];
-                parent->data[0] = _2;
-                parent->data[1] = tmp;
-                parent->numData++;
-            }
-            // 현재 node의 남은 값들을 분리해서, 부모의 child로 재분배
-            if (current == parent->right) {
-                parent->right = new TreeNode<T>(_3);
-                parent->mid = current;
-                current->data[0] = _1;
-                current->data[1] = NULL;
-                parent->numData++;
-                current->numData--;
-            }
-            else if (current == parent->left) {
-                parent->mid = new TreeNode<T>(_3);
-                parent->left = current;
-                current->data[0] = _1;
-                current->data[1] = NULL;
-                parent->numData++;
-                current->numData--;
-            }
-        }
-        // 올라온 값을 받을 부모의 값이 가득 차있는 경우
-        else if (parent->numData == 2) {
-            TreeNode<T> *parent_splited = new TreeNode<T>();
-            if (current == parent->left) {
-                parent_splited->data[0] = parent->data[1];
-
-                parent_splited->right = parent->right;
-                parent_splited->left = parent->mid;
-                parent->mid = NULL;
-
-                parent->right = new TreeNode<T>(_3);
-                current->data[0] = _1;
-                current->data[1] = NULL;
-                current->numData--;
-
-                if (parent != root)
-                    moveNodeToParent(parent, _2);
-                else {
-                    TreeNode<T> *root_new = new TreeNode<T>()
-
-                }
-            }
-            else if (current == parent->mid) {
-
-            }
-            else if (current == parent->right) {
-
-            }
-        }
-    }
-    */
-
     /* Function to return the node that already has target data.
        If not exists, return NULL.                               */
     TreeNode<T> *searchNode(TreeNode<T> *current, T data) {
-        if (current == NULL)
+        if (current == NULL) {
+            cout << "This node is NULL:(" << endl;
+            if (current == root)
+                cout << "And this is root???" << endl;
             return NULL;
+        }
         for (int i=0; i<current->numData; i++) {
-            if (current->data[i] == data)
+            if (current->data[i] == data) {
                 return current;
+            }
         }
         if (current->numData == 1) {
             if (data < current->data[0])
@@ -397,6 +448,9 @@ public:
             else if (current->data[1] < data)
                 searchNode(current->right, data);
         }
+        else {
+            cout << "What the hell is this case???" << endl;
+        }
     }
 
     /* Function to return the node's parent.
@@ -407,14 +461,13 @@ public:
             cout << "The current node exists." << endl;
             TreeNode<T> *parent = NULL;
             TreeNode<T> *current = root;
-            parent = current;
+
             while (true) {
-                if (parent->numData == 1) {
-                    cout << "Wrong??" << endl;
-                    if (data == parent->data[0])
+                if (current->numData == 1) {
+                    if (data == current->data[0])
                         break;
                     else {
-                        cout << "Finding parent which has 1 data" << endl;
+                        cout << "(Finding parent which has 1 data)" << endl;
                         parent = current;
                         if (data < parent->data[0])
                             current = parent->left;
@@ -422,11 +475,11 @@ public:
                             current = parent->right;
                     }
                 }
-                else if (parent->numData == 2) {
-                    if (data == parent->data[0] || data == parent->data[1])
+                else if (current->numData == 2) {
+                    if (data == current->data[0] || data == current->data[1])
                         break;
                     else {
-                        cout << "Finding parent which has 2 data." << endl;
+                        cout << "(Finding parent which has 2 data)" << endl;
                         parent = current;
                         if (data < parent->data[0])
                             current = parent->left;
@@ -436,30 +489,14 @@ public:
                             current = parent->right;
                     }
                 }
-                /*
-                if (parent->numData == 1) {
-                    cout << "Finding parent which has 1 data" << endl;
-                    if (data < parent->data[0])
-                        current = parent->left;
-                    else
-                        current = parent->right;
-                }
-                else if (parent->numData == 2) {
-                    //cout << "Finding parent which has 2 data." << endl;
-                    if (data < parent->data[0])
-                        current = parent->left;
-                    else if (parent->data[0] < data && data < parent->data[1])
-                        current = parent->mid;
-                    else if (parent->data[1] < data)
-                        current = parent->right;
-                }
-                */
             }
             cout << "Found it! Current node's parent's first data is " << parent->data[0] << endl;
             return parent;
         }
-        else
+        else {
+            cout << "There's no such data as " << data << endl;
             return NULL;
+        }
     }
 
     void deleteData(T data) {
@@ -487,14 +524,13 @@ public:
         }
 
         if (midFlag) {
-            cout << "-----";
+            cout << "     ";
         }
         else {
             for (int i=0; i<current->depth; i++) {
-                cout << "----------";
+                cout << "          ";
             }
         }
-
         for (int i=0; i<2; i++) {
             if (current->data[i] != NULL) {
                 cout << current->data[i];
@@ -510,7 +546,6 @@ public:
         if (current->left != NULL) {
             cout << endl;
             printTreeUtil(current->left, 0);
-            cout << endl;
         }
         if (current == root && current->left == NULL && current->mid == NULL && current->right == NULL)
             cout << endl;
@@ -519,20 +554,30 @@ public:
     /* Function to print the entire tree. */
     void printTree() {
         printTreeUtil(root, 0);
+        cout << endl;
+    }
+
+    int getDepth(T data) {
+        TreeNode<T> *node = searchNode(root, data);
+        return node->depth;
     }
 };
 
 int main() {
-    _23Tree<int> tree(10);
 
-    for (int i=20; i<500; i+=10) {
-        tree.insertData(i);
+    _23Tree<int> tree(50);
+
+    int arr[] = {25, 752, 61, 72, 27, 72, 918, 2, 4, 724, 351, 43, 98, 139, 142, 62, 123, 754, 1, 51};
+
+    for (int i=0; i<sizeof(arr)/sizeof(int); i++) {
+        tree.insertData(arr[i]);
         tree.printTree();
-        cout << "===========================================" << endl;
+        cout << "====================================" << endl;
     }
 
-    cout << "<<Print tree>>" << endl;
+    cout << endl << "<<Print final tree>>" << endl;
     tree.printTree();
+
 
     return 0;
 }
