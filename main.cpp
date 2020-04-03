@@ -494,7 +494,38 @@ public:
                     TreeNode<T> *parent = getParent(target->data[0]);
 
                     if (parent->numData == 1) {
+                        TreeNode<T> *gparent = getParent(parent->data[0]);
 
+                        if (target == parent->left) {
+                            if (parent->right->numData == 1) {
+                                parent->data[1] = parent->right->data[0];
+                                parent->left = NULL;
+                                parent->right = NULL;
+                                parent->numData = 2;
+                            }
+                            else if (parent->right->numData == 2) {
+                                parent->left->data[0] = parent->data[0];
+                                parent->data[0] = parent->right->data[0];
+                                parent->right->data[0] = parent->right->data[1];
+                                parent->right->data[1] = NULL;
+                                parent->right->numData = 1;
+                            }
+                        }
+                        else if (target == parent->right) {
+                            if (parent->left->numData == 1) {
+                                parent->data[1] = parent->data[0];
+                                parent->data[0] = parent->left->data[0];
+                                parent->left = NULL;
+                                parent->right = NULL;
+                                parent->numData = 2;
+                            }
+                            else if (parent->left->numData == 2) {
+                                parent->right->data[0] = parent->data[0];
+                                parent->data[0] = parent->left->data[1];
+                                parent->left->data[1] = NULL;
+                                parent->left->numData = 1;
+                            }
+                        }
                     }
                     else if (parent->numData == 2) {
                         if (parent->left->numData == 2) {
@@ -511,14 +542,36 @@ public:
                             parent->right->numData = 1;
                         }
                         else {
-                            // All leaf has 1 data
-                            // Recursion
+                            if (target == parent->left) {
+                                parent->left = parent->mid;
+                                parent->mid = NULL;
+                                parent->left->data[1] = parent->left->data[0];
+                                parent->left->data[0] = parent->data[0];
+                                parent->data[0] = parent->data[1];
+                                parent->data[1] = NULL;
+                                parent->left->numData = 2;
+                                parent->numData = 1;
+                            }
+                            else if (target == parent->mid) {
+                                parent->mid = NULL;
+                                parent->left->data[1] = parent->data[0];
+                                parent->data[0] = parent->data[1];
+                                parent->data[1] = NULL;
+                                parent->left->numData = 2;
+                                parent->numData = 1;
+                            }
+                            else if (target == parent->right) {
+                                parent->right = parent->mid;
+                                parent->mid = NULL;
+                                parent->right->data[1] = parent->data[1];
+                                parent->data[1] = NULL;
+                                parent->right->numData = 2;
+                                parent->numData = 1;
+                            }
                         }
                     }
-
-
                 }
-                // When thd data is not at the leaf node
+                // When the data is not at the leaf node
                 else {
 
                 }
@@ -560,12 +613,43 @@ public:
                             target->right->numData = 1;
                         }
                         else {
-                            // All leaf has 1 data
-                            // Recursion
+                            parent->mid->data[1] = parent->mid->data[0];
+                            parent->mid->data[0] = parent->left->data[0];
+                            parent->data[0] = parent->data[1];
+                            parent->data[1] = NULL;
+                            parent->left = parent->mid;
+                            parent->mid = NULL;
+                            parent->numData = 1;
+                            parent->left->numData = 2;
                         }
                     }
                     else if (target->data[1] == data) {
-
+                        if (target->left->numData == 2) {
+                            target->data[1] = target->data[0];
+                            target->data[0] = target->left->data[1];
+                            target->left->data[1] = NULL;
+                            target->left->numData = 1;
+                        }
+                        else if (target->mid->numData == 2) {
+                            target->data[1] = target->mid->data[1];
+                            target->mid->data[1] = NULL;
+                            target->mid->numData = 1;
+                        }
+                        else if (target->right->numData == 2) {
+                            target->data[1] = target->right->data[0];
+                            target->right->data[0] = target->right->data[1];
+                            target->right->data[1] = NULL;
+                            target->right->numData = 1;
+                        }
+                        else {
+                            // All leaf has 1 data
+                            target->data[1] = NULL;
+                            target->left->data[1] = target->data[0];
+                            target->data[0] = target->mid->data[0];
+                            target->mid = NULL;
+                            target->left->numData = 2;
+                            target->numData = 1;
+                        }
                     }
                 }
             }
