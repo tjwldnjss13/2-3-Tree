@@ -483,16 +483,33 @@ public:
 
     /* Function to delete the data.
        If there is no such data, do nothing. */
-    void deleteData(TreeNode<T> *current, T data) {
+    void deleteData(T data, TreeNode<T> *current = getRoot()) {
         // Check if there is a target data in our tree.
-        TreeNode<T> *target = searchNode(root, data);
+        TreeNode<T> *target;
+
+        if (current == root)
+            target = searchNode(root, data);
+        else
+            target = current;
+
         if (target != NULL) {
+            cout << "It's time to delete " << data << endl;
+
+            TreeNode<T> *current_1;
+            TreeNode<T> *current_2;
+            TreeNode<T> *parent = getParent(target->data[0]);
+
+
+            ///////////////////////////////////////////////////////////
+            //cout << "##################   " << parent->left->data[0] << " " << parent->mid->data[0] << " " << parent->right->data[0] << endl;
+            ///////////////////////////////////////////////////////////
+
+
+
             // When the target node has 1 data
             if (target->numData == 1) {
                 // When the data is at the leaf node
                 if (target->left == NULL && target->mid == NULL && target->right == NULL) {
-                    TreeNode<T> *parent = getParent(target->data[0]);
-
                     if (parent->numData == 1) {
                         TreeNode<T> *gparent = getParent(parent->data[0]);
 
@@ -573,36 +590,112 @@ public:
                 }
                 // When the data is not at the leaf node
                 else {
+                    current_1 = target->left;
+                    current_2 = target->right;
 
+                    while (current_1->right != NULL) {
+                        current_1 = current_1->right;
+                    }
+                    while (current_2->left != NULL) {
+                        current_2 = current_2->left;
+                    }
+                    if (current_1->numData >= current_2->numData) {
+                        if (current_1->numData == 2) {
+                            target->data[0] = current_1->data[1];
+                            cout << "-----Entering to another deleteData function (current_1)-----" << endl;
+                            deleteData(current_1->data[1], current_1);
+                            cout << "-----Escaping from deleteData function (current_1)-----" << endl;
+                        }
+                        else if (current_1->numData == 1) {
+                            target->data[0] = current_1->data[0];
+                            cout << "-----Entering to another deleteData function (current_1)-----" << endl;
+                            deleteData(current_1->data[0], current_1);
+                            cout << "-----Escaping from deleteData function (current_1)-----" << endl;
+                        }
+                    }
+                    else {
+                        target->data[0] = current_2->data[0];
+                        cout << "-----Entering to another deleteData function (current_2)-----" << endl;
+                        deleteData(current_2->data[0], current_2);
+                        cout << "-----Escaping from deleteData function (current_2)-----" << endl;
+                    }
                 }
             }
             // When the target node has 2 data
             else if (target->numData == 2) {
                 // When the data is at the leaf node
                 if (target->left == NULL && target->mid == NULL && target->right == NULL) {
+                    cout << "Target is a leaf node." << endl;
                     if (target->data[0] == data) {
+                        cout << "And first data should be deleted." << endl;
                         target->data[0] = target->data[1];
                         target->data[1] = NULL;
                         target->numData = 1;
                     }
                     else if (target->data[1] == data) {
-                        target->data[1] == NULL;
+                        cout << "And second data should be deleted. " << endl;
+                        target->data[1] = NULL;
                         target->numData = 1;
                     }
                 }
                 // When the data is not at the leaf node
                 else {
                     if (target->data[0] == data) {
+                        current_1 = target->left;
+                        current_2 = target->mid;
+
+                        while (current_1->right != NULL) {
+                            current_1 = current_1->right;
+                        }
+                        while (current_2->left != NULL) {
+                            current_2 = current_2->left;
+                        }
+
+                        if (current_1->numData >= current_2->numData) {
+                            if (current_1->numData == 2) {
+                                target->data[0] = current_1->data[1];
+                                cout << "-----Entering to another deleteData function (current_1)-----" << endl;
+                                deleteData(current_1->data[1], current_1);
+                                cout << "-----Escaping from deleteData function (current_1)-----" << endl;
+                            }
+                            else if (current_1->numData == 1) {
+                                target->data[0] = current_1->data[0];
+                                cout << "-----Entering to another deleteData function (current_1)-----" << endl;
+                                deleteData(current_1->data[0], current_1);
+                                cout << "-----Escaping from deleteData function (current_1)-----" << endl;
+                            }
+                        }
+                        else {
+                            target->data[0] = current_2->data[0];
+                            cout << "-----Entering to another deleteData function (current_2)-----" << endl;
+                            deleteData(current_2->data[0], current_2);
+                            cout << "-----Escaping from deleteData function (current_2)-----" << endl;
+                        }
+
+
+                        /*
                         if (target->left->numData == 2) {
+
+                            //target->data[0] = target->left->data[1];
+                            //target->left->data[1] = NULL;
+                            //target->left->numData = 1;
+
+
                             target->data[0] = target->left->data[1];
-                            target->left->data[1] = NULL;
-                            target->left->numData = 1;
+
+                            deleteData(target->left, target->left->data[1]);
                         }
                         else if (target->mid->numData == 2) {
+
+                            //target->data[0] = target->mid->data[0];
+                            //target->mid->data[0] = target->mid->data[1];
+                            //target->mid->data[1] = NULL;
+                            //target->mid->numData = 1;
+
+
                             target->data[0] = target->mid->data[0];
-                            target->mid->data[0] = target->mid->data[1];
-                            target->mid->data[1] = NULL;
-                            target->mid->numData = 1;
+
+                            deleteData(target->mid, target->mid->data[0]);
                         }
                         else if (target->right->numData == 2) {
                             target->data[0] = target->mid->data[0];
@@ -622,8 +715,50 @@ public:
                             parent->numData = 1;
                             parent->left->numData = 2;
                         }
+                        */
                     }
                     else if (target->data[1] == data) {
+                        current_1 = target->mid;
+                        current_2 = target->right;
+
+                        while (current_1->right != NULL) {
+                            current_1 = current_1->right;
+                        }
+                        while (current_2->left != NULL) {
+                            current_2 = current_2->left;
+                        }
+                        if (current_1->numData >= current_2->numData) {
+                            if (current_1->numData == 2) {
+                                target->data[1] = current_1->data[1];
+                                cout << "-----Entering to another deleteData function (current_1)-----" << endl;
+                                deleteData(current_1->data[1], current_1);
+                                cout << "-----Escaping from deleteData function (current_1)-----" << endl;
+                            }
+                            else if (current_1->numData == 1) {
+                                target->data[1] = current_1->data[0];
+                                cout << "-----Entering to another deleteData function (current_1)-----" << endl;
+                                deleteData(current_1->data[1], current_1);
+                                cout << "-----Escaping from deleteData function (current_1)-----" << endl;
+                            }
+                        }
+                        else {
+                            target->data[1] = current_2->data[0];
+                            cout << "-----Entering to another deleteData function (current_2)-----" << endl;
+                            deleteData(current_2->data[0], current_2);
+                            cout << "-----Escaping from deleteData function (current_2)-----" << endl;
+                        }
+
+                        /*
+                        current = target->mid;
+                        while (current->right != NULL) {
+                            current = current->right;
+                        }
+                        target->data[1] = current->data[0];
+                        deleteData(current->data[0], current);
+                        */
+
+
+                        /*
                         if (target->left->numData == 2) {
                             target->data[1] = target->data[0];
                             target->data[0] = target->left->data[1];
@@ -650,10 +785,18 @@ public:
                             target->left->numData = 2;
                             target->numData = 1;
                         }
+                        */
                     }
                 }
             }
+            cout << "Deleted " << data <<endl;
         }
+        else
+            cout << "There's no such data as " << data << " :)" << endl;
+    }
+
+    TreeNode<T> *getRoot() {
+        return root;
     }
 
     void preorder(TreeNode<T> *current) {
@@ -738,7 +881,8 @@ int main() {
 
     _23Tree<int> tree(50);
 
-    int arr[] = {25, 752, 61, 72, 27, 72, 918, 2, 4, 724, 351, 43, 98, 139, 142, 62, 123, 754, 1, 51, 2574, 7542, 745, 4325};
+    //int arr[] = {25, 752, 61, 72, 27, 72, 918, 2, 4, 724, 351, 43, 98, 139, 142, 62, 123, 754, 1, 51, 2574, 7542, 745, 4325};
+    int arr[] = {25, 752, 61, 72, 27, 72, 918, 2, 4, 724, 351, 43, 98, 139, 142, 62, 123, 754, 1, 51, 2574, 7542, 745, 1, 51, 2574, 23, 623, 41, 52};
     int numData = sizeof(arr) / sizeof(int);
 
     cout << numData + 1 << endl;
@@ -752,12 +896,8 @@ int main() {
     cout << endl << "<<Print final tree>>" << endl;
     tree.printTree();
 
-    cout << tree.getDepth(754) << endl;
-    cout << tree.getDepth(724) << endl;
-    cout << tree.getDepth(2574) << endl;
-    cout << tree.getDepth(7542) << endl;
-    cout << tree.getDepth(752) << endl;
-    cout << tree.getDepth(4325) << endl;
+    tree.deleteData(51, tree.getRoot());
+    tree.printTree();
 
 
     return 0;
