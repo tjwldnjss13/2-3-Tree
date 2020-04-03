@@ -481,8 +481,95 @@ public:
         }
     }
 
-    void deleteData(T data) {
+    /* Function to delete the data.
+       If there is no such data, do nothing. */
+    void deleteData(TreeNode<T> *current, T data) {
+        // Check if there is a target data in our tree.
+        TreeNode<T> *target = searchNode(root, data);
+        if (target != NULL) {
+            // When the target node has 1 data
+            if (target->numData == 1) {
+                // When the data is at the leaf node
+                if (target->left == NULL && target->mid == NULL && target->right == NULL) {
+                    TreeNode<T> *parent = getParent(target->data[0]);
 
+                    if (parent->numData == 1) {
+
+                    }
+                    else if (parent->numData == 2) {
+                        if (parent->left->numData == 2) {
+                            target->data[0] = parent->data[0];
+                            parent->data[0] = parent->left->data[1];
+                            parent->left->data[1] = NULL;
+                            parent->left->numData = 1;
+                        }
+                        else if (parent->right->numData == 2) {
+                            target->data[0] = parent->data[1];
+                            parent->data[1] = parent->right->data[0];
+                            parent->right->data[0] = parent->right->data[1];
+                            parent->right->data[1] = NULL;
+                            parent->right->numData = 1;
+                        }
+                        else {
+                            // All leaf has 1 data
+                            // Recursion
+                        }
+                    }
+
+
+                }
+                // When thd data is not at the leaf node
+                else {
+
+                }
+            }
+            // When the target node has 2 data
+            else if (target->numData == 2) {
+                // When the data is at the leaf node
+                if (target->left == NULL && target->mid == NULL && target->right == NULL) {
+                    if (target->data[0] == data) {
+                        target->data[0] = target->data[1];
+                        target->data[1] = NULL;
+                        target->numData = 1;
+                    }
+                    else if (target->data[1] == data) {
+                        target->data[1] == NULL;
+                        target->numData = 1;
+                    }
+                }
+                // When the data is not at the leaf node
+                else {
+                    if (target->data[0] == data) {
+                        if (target->left->numData == 2) {
+                            target->data[0] = target->left->data[1];
+                            target->left->data[1] = NULL;
+                            target->left->numData = 1;
+                        }
+                        else if (target->mid->numData == 2) {
+                            target->data[0] = target->mid->data[0];
+                            target->mid->data[0] = target->mid->data[1];
+                            target->mid->data[1] = NULL;
+                            target->mid->numData = 1;
+                        }
+                        else if (target->right->numData == 2) {
+                            target->data[0] = target->mid->data[0];
+                            target->mid->data[0] = target->data[1];
+                            target->data[1] = target->right->data[0];
+                            target->right->data[0] = target->right->data[1];
+                            target->right->data[1] = NULL;
+                            target->right->numData = 1;
+                        }
+                        else {
+                            // All leaf has 1 data
+                            // Recursion
+                        }
+                    }
+                    else if (target->data[1] == data) {
+
+                    }
+                }
+            }
+        }
     }
 
     void preorder(TreeNode<T> *current) {
