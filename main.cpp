@@ -100,8 +100,11 @@ public:
                 // Part to split node.
                 splitNode(parent, data);
             }
+            updateSubtreeDepth(root, root->depth);
             cout << "Inserted " << data << endl;
         }
+        else
+            cout << data << "is already here :)" << endl;
     }
 
     /* Function to split the node because it's full while inserting. */
@@ -155,9 +158,6 @@ public:
                 root->right->mid = NULL;
                 root->right->right = child_4;
 
-                root->left->depth = root->depth + 1;
-                root->right->depth = root->depth + 1;
-
                 ret_right_new = root->right;
 
                 cout << "New root!!!" << endl;
@@ -195,7 +195,7 @@ public:
                         parent->mid->mid = NULL;
                         parent->mid->right = child_4;
 
-                        parent->mid->depth = parent->depth + 1;
+                        ret_right_new = parent->mid;
                     }
 
                     // When the node is parent's right child.
@@ -226,7 +226,7 @@ public:
                         right_new->right = child_4;
                         */
 
-                        parent->right->depth = parent->depth + 1;
+                        ret_right_new = parent->right;
                     }
                 }
 
@@ -265,58 +265,12 @@ public:
                         parent->right = left_new_2;
                         parent_new->left = mid_new;
                         parent_new->right = right_new;
-
-                        parent->left->depth = parent->depth + 1;
-                        parent->right->depth = parent->depth + 1;
-                        parent_new->left->depth = parent_new->depth + 1;
-                        parent_new->right->depth = parent_new->depth + 1;
                         /////////////////////////////////////////////////////////////////////////
-
-                        /*
-                        if (gparent_new->numData == 1) {
-                            gparent_new->left->left = left_new_1;
-                            gparent_new->left->right = left_new_2;
-                            gparent_new->right->left = mid_new;
-                            gparent_new->right->right = right_new;
-                            cout << "#################  " << gparent_new->right->left->data[0] << endl;
-                        }
-                        else if (gparent_new->numData == 2) {
-                            if (parent == gparent_new->left) {
-                                cout << "Parent is Grand parent's left child." << endl;
-                                gparent_new->left->left = left_new_1;
-                                gparent_new->left->right = left_new_2;
-                                gparent_new->mid->left = mid_new;
-                                gparent_new->mid->right = right_new;
-                            }
-                            else if (parent == gparent_new->mid) {
-                                cout << "Parent is Grand parent's mid child." << endl;
-                                gparent_new->mid->left = left_new_1;
-                                gparent_new->mid->right = left_new_2;
-                                gparent_new->right->left = mid_new;
-                                gparent_new->right->right = right_new;
-                            }
-                        }
-                        */
 
                         cout << "111111111 " << root->data[0] << endl;
                         cout << "222222222 " << root->left->data[0] << endl;
                         cout << "333333333 " << root->left->right->data[0] << endl;
                         //cout << "444444444 " << root->left->right->left->data[0] << endl;
-
-
-                        /*
-                        gparent_new->left->left = left_new_1;
-                        gparent_new->left->right = left_new_2;
-                        gparent_new->right->left = mid_new;
-                        gparent_new->right->right = right_new;
-                        */
-
-                        /*
-                        left_new_1->depth = getParent(left_new_1->data[0])->depth + 1;
-                        left_new_2->depth = getParent(left_new_2->data[0])->depth + 1;
-                        mid_new->depth = getParent(mid_new->data[0])->depth + 1;
-                        right_new->depth = getParent(right_new->data[0])->depth + 1;
-                        */
 
                         ret_right_new = gparent_new->right;
                     }
@@ -346,12 +300,6 @@ public:
                         parent->left = left_new;
                         parent->right = mid_new_1;
                         parent_new->left = mid_new_2;
-                        parent_new->right = right_new;
-
-                        parent->left->depth = parent->depth + 1;
-                        parent->right->depth = parent->depth + 1;
-                        parent_new->left->depth = parent_new->depth + 1;
-                        parent_new->right->depth = parent_new->depth + 1;
                         /////////////////////////////////////////////////////////////
 
                         /*
@@ -388,18 +336,6 @@ public:
                         cout << "333333333 " << root->left->right->data[0] << endl;
                         //cout << "444444444 " << root->left->right->left->data[0] << endl;
 
-                        /*
-                        gparent_new->left->right = mid_new_1;
-                        gparent_new->right->left = mid_new_2;
-                        */
-
-                        /*
-                        left_new->depth = getParent(left_new->data[0])->depth + 1;
-                        mid_new_1->depth = getParent(mid_new_1->data[0])->depth + 1;
-                        mid_new_2->depth = getParent(mid_new_2->data[0])->depth + 1;
-                        right_new->depth = getParent(right_new->data[0])->depth + 1;
-                        */
-
                         ret_right_new = gparent_new->right->left;
                     }
 
@@ -429,12 +365,6 @@ public:
                         parent->right = mid_new;
                         parent_new->left = right_new_1;
                         parent_new->right = right_new_2;
-
-                        parent->left->depth = parent->depth + 1;
-                        parent->right->depth = parent->depth + 1;
-                        parent_new->left->depth = parent_new->depth + 1;
-                        parent_new->right->depth = parent_new->depth + 1;
-
                         ///////////////////////////////////////////////////////////////
 
                         /*
@@ -458,20 +388,6 @@ public:
                                 gparent_new->right->right = right_new_2;
                             }
                         }
-                        */
-
-                        /*
-                        gparent_new->mid->left = left_new;
-                        gparent_new->mid->right = mid_new;
-                        gparent_new->right->left = right_new_1;
-                        gparent_new->right->right = right_new_2;
-                        */
-
-                        /*
-                        left_new->depth = getParent(left_new->data[0])->depth + 1;
-                        mid_new->depth = getParent(mid_new->data[0])->depth + 1;
-                        right_new_1->depth = getParent(right_new_1->data[0])->depth + 1;
-                        right_new_2->depth = getParent(right_new_1->data[0])->depth + 1;
                         */
 
                         ret_right_new = gparent_new->right;
@@ -553,7 +469,10 @@ public:
                     }
                 }
             }
-            cout << "Found it! Current node's parent's first data is " << parent->data[0] << endl;
+            if (current == root)
+                cout << "There's no parent, because it is a root!!" << endl;
+            else
+                cout << "Found it! Current node's parent's first data is " << parent->data[0] << endl;
             return parent;
         }
         else {
@@ -587,7 +506,7 @@ public:
         }
 
         if (midFlag) {
-            cout << "     ";
+            cout << "      ";
         }
         else {
             for (int i=0; i<current->depth; i++) {
@@ -624,13 +543,34 @@ public:
         TreeNode<T> *node = searchNode(root, data);
         return node->depth;
     }
+
+    void updateSubtreeDepth(TreeNode<T> *current, int current_depth) {
+        if (current != NULL) {
+            if (current->right != NULL) {
+                updateSubtreeDepth(current->right, current_depth + 1);
+            }
+            if (current->mid != NULL) {
+                updateSubtreeDepth(current->mid, current_depth + 1);
+            }
+            if (current != root) {
+                current->depth = current_depth;
+                cout << "The node that contains " << current->data[0] << "'s depth is updates." << endl;
+            }
+            if (current->left != NULL) {
+                updateSubtreeDepth(current->left, current_depth + 1);
+            }
+        }
+    }
 };
 
 int main() {
 
     _23Tree<int> tree(50);
 
-    int arr[] = {25, 752, 61, 72, 27, 72, 918, 2, 4, 724, 351, 43, 98, 139, 142, 62, 123, 754, 1, 51, 983, 263, 723, 624, 1, 7524, 623, 83, 235, 8, 4, 457, 34, 6583, 32, 865, 354, 76, 4, 6583, 3, 34};
+    int arr[] = {25, 752, 61, 72, 27, 72, 918, 2, 4, 724, 351, 43, 98, 139, 142, 62, 123, 754, 1, 51, 2574, 7542, 745, 4325};
+    int numData = sizeof(arr) / sizeof(int);
+
+    cout << numData + 1 << endl;
 
     for (int i=0; i<sizeof(arr)/sizeof(int); i++) {
         tree.insertData(arr[i]);
@@ -640,6 +580,13 @@ int main() {
 
     cout << endl << "<<Print final tree>>" << endl;
     tree.printTree();
+
+    cout << tree.getDepth(754) << endl;
+    cout << tree.getDepth(724) << endl;
+    cout << tree.getDepth(2574) << endl;
+    cout << tree.getDepth(7542) << endl;
+    cout << tree.getDepth(752) << endl;
+    cout << tree.getDepth(4325) << endl;
 
 
     return 0;
